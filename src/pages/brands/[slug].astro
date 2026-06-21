@@ -41,46 +41,46 @@ function getProgressColor(pct: number): string {
 <Layout title={title}>
 
   <!-- ═══ HERO ═══ -->
-  <div class="hero glass">
+  <div class="glass-panel hero-section">
     <div class="hero-left">
       <div class="avatar">{initials}</div>
-      <div>
+      <div class="hero-info">
         <h1 class="brand-name">{title}</h1>
         <p class="brand-meta">
-          {leader && <span>Leader: {leader}</span>}
-          {core_service && <span> · {core_service}</span>}
+          {leader && <span class="meta-item">Leader: <strong style="color:var(--text-main);">{leader}</strong></span>}
+          {core_service && <span class="meta-item">Service: <strong style="color:var(--text-main);">{core_service}</strong></span>}
         </p>
       </div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-label">Overall Progress</div>
-      <div class="hero-stat-number">{overall_progress}<span class="hero-stat-pct">%</span></div>
-      <div class="progress-container" style="width: 140px; margin-top: 8px;">
-        <div class="progress-bar" style={`width: ${overall_progress}%`}></div>
+      <div class="stat-label">Overall Progress</div>
+      <div class="stat-value">{overall_progress}<span class="stat-pct">%</span></div>
+      <div class="progress-track" style="width: 140px; margin-top: 12px; margin-left: auto;">
+        <div class="progress-fill" style={`width: ${overall_progress}%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));`}></div>
       </div>
     </div>
   </div>
 
   <!-- ═══ KPI CARDS ═══ -->
   {kpi_items && kpi_items.length > 0 && (
-    <div class="section-block">
+    <div class="section-container">
       <h2 class="section-title">KPI Tổng quan</h2>
-      <div class="grid-cols-4 kpi-grid">
+      <div class="kpi-grid">
         {kpi_items.map((item) => {
           const pct = Math.round((item.post / item.kpi) * 100);
           const color = getProgressColor(pct);
           return (
-            <div class="glass kpi-card">
-              <div class="kpi-top">
+            <div class="glass-panel kpi-card">
+              <div class="kpi-header">
                 <span class="kpi-name">{item.label}</span>
-                <span class="kpi-badge" style={`color: ${color}; background: ${color}20;`}>{pct}%</span>
+                <span class="kpi-badge" style={`color: ${color}; background: ${color}15; border: 1px solid ${color}30;`}>{pct}%</span>
               </div>
-              <div class="kpi-num">
+              <div class="kpi-numbers">
                 <span class="kpi-big">{item.post.toLocaleString()}</span>
                 <span class="kpi-of">/ {item.kpi.toLocaleString()}</span>
               </div>
-              <div class="progress-container" style="margin-top: 12px; height: 4px;">
-                <div class="progress-bar" style={`width: ${Math.min(pct, 100)}%; background: ${color};`}></div>
+              <div class="progress-track" style="margin-top: 16px;">
+                <div class="progress-fill" style={`width: ${Math.min(pct, 100)}%; background: ${color}; box-shadow: 0 0 10px ${color}80;`}></div>
               </div>
               {item.note && <div class="kpi-note">{item.note}</div>}
             </div>
@@ -92,137 +92,145 @@ function getProgressColor(pct: number): string {
 
   <!-- ═══ OVERVIEW TASK ═══ -->
   {overview_tasks && overview_tasks.length > 0 && (
-    <div class="section-block">
+    <div class="section-container">
       <h2 class="section-title">Overview Task</h2>
-      <div class="table-responsive">
-        <table class="modern-table">
-          <thead>
-            <tr>
-              <th>Task</th>
-              <th>Deadline</th>
-              <th>Ưu tiên</th>
-              <th>Status</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {overview_tasks.map((t) => (
+      <div class="glass-panel" style="overflow: hidden;">
+        <div class="table-wrapper">
+          <table class="premium-table">
+            <thead>
               <tr>
-                <td style="font-weight: 500;">{t.task}</td>
-                <td style="color: var(--text-muted);">{t.deadline ?? '—'}</td>
-                <td>{t.priority ? <span class="tag danger">{t.priority}</span> : <span style="color: var(--text-muted);">—</span>}</td>
-                <td><span class={`tag ${stClass(t.status)}`}>{t.status}</span></td>
-                <td style="color: var(--text-muted); font-size: 0.9rem;">{t.note ?? '—'}</td>
+                <th>Task</th>
+                <th>Deadline</th>
+                <th>Ưu tiên</th>
+                <th>Status</th>
+                <th>Note</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {overview_tasks.map((t) => (
+                <tr>
+                  <td style="font-weight: 500;">{t.task}</td>
+                  <td style="color: var(--text-muted);">{t.deadline ?? '—'}</td>
+                  <td>{t.priority ? <span class="status-tag danger">{t.priority}</span> : <span style="color: var(--text-muted);">—</span>}</td>
+                  <td><span class={`status-tag ${stClass(t.status)}`}>{t.status}</span></td>
+                  <td style="color: var(--text-muted);">{t.note ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )}
 
   <!-- ═══ TASK MANAGEMENT ═══ -->
   {account_tasks && account_tasks.length > 0 && (
-    <div class="section-block">
+    <div class="section-container">
       <h2 class="section-title">Task Management</h2>
-      <div class="table-responsive">
-        <table class="modern-table">
-          <thead>
-            <tr>
-              <th>Hạng mục</th>
-              <th>Tiến độ</th>
-              <th>DL Internal</th>
-              <th>DL EXT/Air</th>
-              <th>Status</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {account_tasks.map((t) => {
-              const color = getProgressColor(t.progress);
-              return (
-                <tr>
-                  <td style="font-weight: 500;">{t.title}</td>
-                  <td>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                      <span style={`font-weight: 600; font-size: 0.85rem; color: ${color}; min-width: 36px;`}>{t.progress}%</span>
-                      <div class="progress-container" style="width: 100px; height: 6px;">
-                        <div class="progress-bar" style={`width: ${t.progress}%; background: ${color};`}></div>
+      <div class="glass-panel" style="overflow: hidden;">
+        <div class="table-wrapper">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Hạng mục</th>
+                <th>Tiến độ</th>
+                <th>DL Internal</th>
+                <th>DL EXT/Air</th>
+                <th>Status</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {account_tasks.map((t) => {
+                const color = getProgressColor(t.progress);
+                return (
+                  <tr>
+                    <td style="font-weight: 500;">{t.title}</td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 16px;">
+                        <span style={`font-weight: 600; font-size: 0.9rem; color: ${color}; width: 36px; display: inline-block;`}>{t.progress}%</span>
+                        <div class="progress-track" style="width: 100px;">
+                          <div class="progress-fill" style={`width: ${t.progress}%; background: ${color}; box-shadow: 0 0 8px ${color}60;`}></div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td style="color: var(--text-muted);">{t.deadline_internal ?? '—'}</td>
-                  <td style="color: var(--text-muted);">{t.deadline_ext ?? '—'}</td>
-                  <td><span class={`tag ${stClass(t.status)}`}>{t.status}</span></td>
-                  <td style="color: var(--text-muted); font-size: 0.9rem;">{t.note ?? '—'}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td style="color: var(--text-muted);">{t.deadline_internal ?? '—'}</td>
+                    <td style="color: var(--text-muted);">{t.deadline_ext ?? '—'}</td>
+                    <td><span class={`status-tag ${stClass(t.status)}`}>{t.status}</span></td>
+                    <td style="color: var(--text-muted);">{t.note ?? '—'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )}
 
   <!-- ═══ THANH TOÁN + HỢP ĐỒNG ═══ -->
   {(payment_items || contract_items) && (
-    <div class="grid-cols-2">
+    <div class="split-grid">
       {payment_items && payment_items.length > 0 && (
-        <div class="section-block">
+        <div class="section-container" style="margin-top: 0;">
           <h2 class="section-title">Thanh toán</h2>
-          <div class="table-responsive">
-            <table class="modern-table">
-              <thead>
-                <tr>
-                  <th>Đối tác</th>
-                  <th>Loại</th>
-                  <th>Hạn TT</th>
-                  <th>Số tiền</th>
-                  <th>Tình trạng</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payment_items.map((p) => (
+          <div class="glass-panel" style="overflow: hidden;">
+            <div class="table-wrapper">
+              <table class="premium-table">
+                <thead>
                   <tr>
-                    <td style="font-weight: 500;">{p.partner}</td>
-                    <td><span class={`tag ${p.type === 'THU' ? 'success' : 'primary'}`}>{p.type}</span></td>
-                    <td style={p.overdue_days > 0 ? 'color: var(--danger); font-weight: 500;' : 'color: var(--text-muted);'}>
-                      {p.due_date}
-                      {p.overdue_days > 0 && <span style="font-size: 0.75rem; margin-left: 4px;">(+{p.overdue_days}d)</span>}
-                    </td>
-                    <td style="font-weight: 500;">{p.amount}đ</td>
-                    <td><span class={`tag ${stClass(p.status)}`}>{p.status}</span></td>
+                    <th>Đối tác</th>
+                    <th>Loại</th>
+                    <th>Hạn TT</th>
+                    <th>Số tiền</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {payment_items.map((p) => (
+                    <tr>
+                      <td style="font-weight: 500;">{p.partner}</td>
+                      <td><span class={`status-tag ${p.type === 'THU' ? 'success' : 'primary'}`}>{p.type}</span></td>
+                      <td style={p.overdue_days > 0 ? 'color: var(--danger); font-weight: 500;' : 'color: var(--text-muted);'}>
+                        {p.due_date}
+                        {p.overdue_days > 0 && <span style="font-size: 0.75rem; margin-left: 6px; padding: 2px 6px; background: rgba(239, 68, 68, 0.15); border-radius: 4px;">+{p.overdue_days}d</span>}
+                      </td>
+                      <td style="font-weight: 500;">{p.amount}đ</td>
+                      <td><span class={`status-tag ${stClass(p.status)}`}>{p.status}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
       {contract_items && contract_items.length > 0 && (
-        <div class="section-block">
+        <div class="section-container" style="margin-top: 0;">
           <h2 class="section-title">Hợp đồng & BBNT</h2>
-          <div class="table-responsive">
-            <table class="modern-table">
-              <thead>
-                <tr>
-                  <th>Bên ký</th>
-                  <th>Văn bản</th>
-                  <th>Status</th>
-                  <th>Note</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contract_items.map((c) => (
+          <div class="glass-panel" style="overflow: hidden;">
+            <div class="table-wrapper">
+              <table class="premium-table">
+                <thead>
                   <tr>
-                    <td style="font-weight: 500;">{c.partner}</td>
-                    <td>{c.doc}</td>
-                    <td><span class={`tag ${stClass(c.status)}`}>{c.status}</span></td>
-                    <td style="color: var(--text-muted); font-size: 0.9rem;">{c.note ?? '—'}</td>
+                    <th>Bên ký</th>
+                    <th>Văn bản</th>
+                    <th>Status</th>
+                    <th>Note</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {contract_items.map((c) => (
+                    <tr>
+                      <td style="font-weight: 500;">{c.partner}</td>
+                      <td>{c.doc}</td>
+                      <td><span class={`status-tag ${stClass(c.status)}`}>{c.status}</span></td>
+                      <td style="color: var(--text-muted);">{c.note ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
@@ -231,31 +239,31 @@ function getProgressColor(pct: number): string {
 
   <!-- ═══ IFRAME SHEET ═══ -->
   {sheet_embed_url && (
-    <div class="section-block">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div class="section-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <h2 class="section-title" style="margin-bottom: 0;">Data Nguồn (Google Sheet)</h2>
         {sheet_url && (
-          <a href={sheet_url} target="_blank" style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+          <a href={sheet_url} target="_blank" class="glass-panel" style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem; font-weight: 600; padding: 10px 20px; transition: all 0.2s;">
             Mở toàn màn hình ↗
           </a>
         )}
       </div>
-      <div class="iframe-container glass">
-        <iframe src={sheet_embed_url}></iframe>
+      <div class="glass-panel" style="overflow: hidden; height: 500px; padding: 0;">
+        <iframe src={sheet_embed_url} style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
     </div>
   )}
 
   <!-- ═══ FALLBACK ═══ -->
   {!account_tasks && (
-    <div class="section-block">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div class="section-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <h2 class="section-title" style="margin-bottom: 0;">Task Management</h2>
-        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`} style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`} class="glass-panel" style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem; font-weight: 600; padding: 10px 20px;">
           + Thêm task mới
         </a>
       </div>
-      <div class="glass" style="padding: 48px; text-align: center; color: var(--text-muted);">
+      <div class="glass-panel" style="padding: 64px; text-align: center; color: var(--text-muted); font-size: 1.1rem;">
         Chưa có task nào cho {title}.
       </div>
     </div>
@@ -264,139 +272,174 @@ function getProgressColor(pct: number): string {
 </Layout>
 
 <style>
+  /* Base structural spacing */
+  .section-container {
+    margin-top: 56px;
+  }
   .section-title {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    letter-spacing: 0.02em;
     color: var(--text-main);
   }
 
-  /* ── HERO ── */
-  .hero {
-    padding: 32px 40px;
+  /* Progress bars */
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: 40px 48px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 24px;
-    margin-bottom: 48px;
     position: relative;
-    overflow: hidden;
   }
-  .hero::before {
+  .hero-section::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
     background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
   }
-  .hero-left { 
-    display: flex; 
-    align-items: center; 
-    gap: 24px; 
+  .hero-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
   }
   .avatar {
-    width: 64px; 
-    height: 64px;
+    width: 72px;
+    height: 72px;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    border-radius: 16px;
-    display: grid; 
+    border-radius: 20px;
+    display: grid;
     place-items: center;
-    font-size: 1.5rem; 
+    font-size: 1.8rem;
     font-weight: 700;
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
-    flex-shrink: 0;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
   }
-  .brand-name { 
-    font-size: 1.75rem; 
-    margin-bottom: 4px; 
+  .brand-name {
+    font-size: 2.2rem;
     font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
   }
-  .brand-meta { 
-    font-size: 0.95rem; 
-    color: var(--text-muted); 
+  .brand-meta {
+    font-size: 1rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 16px;
   }
-  .hero-stat { 
-    text-align: right; 
+  .meta-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
-  .hero-stat-label { 
-    font-size: 0.85rem; 
-    color: var(--text-muted); 
-    text-transform: uppercase; 
-    letter-spacing: 0.05em; 
-    margin-bottom: 8px; 
+  .hero-stat {
+    text-align: right;
+  }
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     font-weight: 600;
+    margin-bottom: 8px;
   }
-  .hero-stat-number { 
-    font-size: 2.5rem; 
-    font-weight: 700; 
-    line-height: 1; 
+  .stat-value {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
   }
-  .hero-stat-pct { 
-    font-size: 1.25rem; 
-    color: var(--text-muted); 
-    font-weight: 500; 
+  .stat-pct {
+    font-size: 1.5rem;
+    color: var(--text-muted);
     margin-left: 4px;
   }
 
-  /* ── KPI CARDS ── */
+  /* KPI Cards Grid */
   .kpi-grid {
-    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
   }
   .kpi-card {
-    padding: 24px;
+    padding: 28px 24px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
   }
   .kpi-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
   }
-  .kpi-top { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
+  .kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
   }
-  .kpi-name { 
-    font-size: 0.85rem; 
-    color: var(--text-muted); 
-    text-transform: uppercase; 
-    letter-spacing: 0.05em; 
-    font-weight: 600; 
+  .kpi-name {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
   }
-  .kpi-badge { 
-    font-size: 0.75rem; 
-    font-weight: 700; 
-    padding: 4px 10px; 
-    border-radius: 8px; 
+  .kpi-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
   }
-  .kpi-num { 
-    display: flex; 
-    align-items: baseline; 
-    gap: 6px; 
-    margin-top: 8px;
+  .kpi-numbers {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
   }
-  .kpi-big { 
-    font-size: 2rem; 
-    font-weight: 700; 
-    line-height: 1; 
+  .kpi-big {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
     color: var(--text-main);
   }
-  .kpi-of { 
-    font-size: 1rem; 
-    color: var(--text-muted); 
+  .kpi-of {
+    font-size: 1.1rem;
+    color: var(--text-muted);
     font-weight: 500;
   }
-  .kpi-note { 
-    font-size: 0.85rem; 
-    color: var(--text-muted); 
-    margin-top: 8px;
+  .kpi-note {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 16px;
   }
-  
-  @media(max-width: 1200px) {
+
+  /* Layout splits */
+  .split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 56px;
+  }
+
+  @media (max-width: 1300px) {
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 1024px) {
+    .split-grid { grid-template-columns: 1fr; }
   }
 </style>
