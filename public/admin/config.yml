@@ -1,0 +1,72 @@
+backend:
+  name: github
+  repo: nthnhu9324/project_management
+  branch: main
+  
+# Để có thể sử dụng CMS trên local (máy của bạn) mà không cần deploy ngay
+local_backend: true
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "brands"
+    label: "Brands (Thương hiệu)"
+    folder: "src/content/brands"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Tên Brand", name: "title", widget: "string"}
+      - {label: "Leader", name: "leader", widget: "string"}
+      - {label: "Sản phẩm/Dịch vụ cốt lõi", name: "core_service", widget: "string", required: false}
+      - {label: "Logo", name: "logo", widget: "image", required: false}
+      
+  - name: "tasks"
+    label: "Tasks (Công việc)"
+    folder: "src/content/tasks"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Hạng mục công việc", name: "title", widget: "string"}
+      - {label: "Brand", name: "brand", widget: "relation", collection: "brands", search_fields: ["title"], value_field: "title", display_fields: ["title"]}
+      - {label: "Ngày (Date)", name: "date", widget: "datetime"}
+      
+      # KPI & Post Info
+      - {label: "Hạng mục", name: "category", widget: "string", required: false}
+      - {label: "KPI", name: "kpi", widget: "string", required: false}
+      - {label: "Post", name: "post", widget: "string", required: false}
+      - {label: "Link air", name: "link_air", widget: "string", required: false}
+      - {label: "Actual", name: "actual", widget: "string", required: false}
+      
+      # Progress & Status
+      - {label: "Status", name: "status", widget: "select", options: ["Not Started", "In Progress", "Pending", "Completed", "Canceled"], default: "Not Started"}
+      - {label: "Progress (%)", name: "progress", widget: "number", value_type: "int", min: 0, max: 100, default: 0}
+      
+      # Deadline Management
+      - {label: "Deadline (EXT/air)", name: "deadline_ext", widget: "datetime", required: false}
+      - {label: "Deadline (Internal)", name: "deadline_internal", widget: "datetime", required: false}
+      
+      # Documentation & Notes
+      - {label: "Attachment Link", name: "attachment_link", widget: "string", required: false}
+      - {label: "Notes", name: "body", widget: "markdown", required: false}
+
+  - name: "lessons"
+    label: "Bài học & Kinh nghiệm"
+    folder: "src/content/lessons"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Tiêu đề", name: "title", widget: "string"}
+      - {label: "Ngày", name: "date", widget: "datetime"}
+      - {label: "Brand liên quan", name: "brand", widget: "relation", collection: "brands", search_fields: ["title"], value_field: "title", display_fields: ["title"], required: false}
+      - {label: "Nội dung kinh nghiệm rút ra", name: "body", widget: "markdown"}
+
+  - name: "resources"
+    label: "Resources / Link Tổng"
+    folder: "src/content/resources"
+    create: true
+    fields:
+      - {label: "Tên tài nguyên", name: "title", widget: "string"}
+      - {label: "Mô tả", name: "description", widget: "string", required: false}
+      - {label: "Đường link", name: "url", widget: "string"}
+      - {label: "Phân loại", name: "category", widget: "select", options: ["Template", "Source", "Design", "Khác"], default: "Khác"}
