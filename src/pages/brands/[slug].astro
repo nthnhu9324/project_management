@@ -31,218 +31,231 @@ function statusClass(status: string): string {
   return map[status] ?? '';
 }
 
-function progressColor(pct: number): string {
+function progressGradient(pct: number): string {
   if (pct >= 90) return 'linear-gradient(90deg, #10b981, #34d399)';
   if (pct >= 50) return 'linear-gradient(90deg, #3b82f6, #8b5cf6)';
   return 'linear-gradient(90deg, #f59e0b, #ef4444)';
+}
+
+function kpiColor(pct: number): string {
+  if (pct >= 100) return '#34d399';
+  if (pct >= 70) return '#fbbf24';
+  return '#f87171';
 }
 ---
 
 <Layout title={title}>
 
   <!-- Brand Header -->
-  <div class="brand-header glass">
-    <div class="brand-title">
-      <div class="logo-placeholder">{initials}</div>
-      <div>
-        <h1>{title}</h1>
-        <p>
-          {leader && <span>Leader: {leader}</span>}
-          {core_service && <span> • {core_service}</span>}
+  <section class="hero glass">
+    <div class="hero-left">
+      <div class="hero-logo">{initials}</div>
+      <div class="hero-info">
+        <h1 class="hero-title">{title}</h1>
+        <p class="hero-subtitle">
+          {leader && <span>{leader}</span>}
+          {core_service && <span> · {core_service}</span>}
         </p>
       </div>
     </div>
-    <div class="brand-progress-header">
-      <span>Overall Progress: {overall_progress}%</span>
-      <div class="progress-container" style="width: 200px; margin-top: 8px;">
-        <div class="progress-bar" style={`width: ${overall_progress}%; background: ${progressColor(overall_progress)}`}></div>
+    <div class="hero-right">
+      <div class="hero-progress-label">Overall Progress</div>
+      <div class="hero-progress-row">
+        <div class="hero-progress-track">
+          <div class="hero-progress-fill" style={`width:${overall_progress}%; background:${progressGradient(overall_progress)}`}></div>
+        </div>
+        <span class="hero-progress-value">{overall_progress}%</span>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- KPI Stat Panel -->
+  <!-- KPI Stat Cards -->
   {kpi_items && kpi_items.length > 0 && (
-    <div class="section-block">
-      <h2>KPI Tổng quan — Chiến dịch Khai trương</h2>
+    <section class="section">
+      <h2 class="section-title">KPI Tổng quan</h2>
       <div class="kpi-grid">
         {kpi_items.map((item) => {
           const pct = Math.round((item.post / item.kpi) * 100);
           return (
             <div class="kpi-card glass">
-              <div class="kpi-label">{item.label}</div>
-              <div class="kpi-numbers">
-                <div class="kpi-stat">
-                  <span class="kpi-value">{item.post.toLocaleString()}</span>
-                  <span class="kpi-unit">/ {item.kpi.toLocaleString()}</span>
-                </div>
-                <span class={`tag ${pct >= 100 ? 'success' : pct >= 70 ? 'warning' : 'danger'}`} style="font-size: 0.75rem;">
-                  {pct}%
-                </span>
+              <span class="kpi-label">{item.label}</span>
+              <div class="kpi-main">
+                <span class="kpi-big" style={`color:${kpiColor(pct)}`}>{item.post.toLocaleString()}</span>
+                <span class="kpi-of">/ {item.kpi.toLocaleString()}</span>
               </div>
-              <div class="progress-container" style="margin-top: 10px;">
-                <div class="progress-bar" style={`width: ${Math.min(pct, 100)}%; background: ${progressColor(pct)}`}></div>
+              <div class="kpi-bar-wrap">
+                <div class="kpi-bar" style={`width:${Math.min(pct,100)}%; background:${progressGradient(pct)}`}></div>
               </div>
-              {item.note && <div class="kpi-note">{item.note}</div>}
+              <div class="kpi-footer">
+                <span class="kpi-pct" style={`color:${kpiColor(pct)}`}>{pct}%</span>
+                {item.note && <span class="kpi-note">{item.note}</span>}
+              </div>
             </div>
           );
         })}
       </div>
-    </div>
+    </section>
   )}
 
   <!-- Overview Task -->
   {overview_tasks && overview_tasks.length > 0 && (
-    <div class="section-block">
-      <h2>Overview Task</h2>
-      <div class="table-responsive">
-        <table class="modern-table">
-          <thead>
-            <tr>
-              <th>Task</th>
-              <th>Deadline</th>
-              <th>Ưu tiên</th>
-              <th>Status</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {overview_tasks.map((t) => (
-              <tr>
-                <td style="font-weight: 500;">{t.task}</td>
-                <td>{t.deadline ?? '—'}</td>
-                <td>
-                  {t.priority
-                    ? <span class="tag danger">{t.priority}</span>
-                    : <span style="color: var(--text-muted);">—</span>
-                  }
-                </td>
-                <td><span class={`tag ${statusClass(t.status)}`}>{t.status}</span></td>
-                <td style="color: var(--text-muted); font-size: 0.9rem;">{t.note ?? '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )}
-
-  <!-- Account Task -->
-  {account_tasks && account_tasks.length > 0 && (
-    <div class="section-block">
-      <h2>Account Task</h2>
-      <div class="table-responsive">
-        <table class="modern-table">
-          <thead>
-            <tr>
-              <th>Hạng mục</th>
-              <th>Tiến độ</th>
-              <th>DL Internal</th>
-              <th>DL EXT/Air</th>
-              <th>Status</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {account_tasks.map((t) => (
-              <tr>
-                <td style="font-weight: 500;">{t.title}</td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 0.8rem; min-width: 36px;">{t.progress}%</span>
-                    <div class="progress-container" style="width: 90px;">
-                      <div class="progress-bar" style={`width: ${t.progress}%; background: ${progressColor(t.progress)}`}></div>
-                    </div>
-                  </div>
-                </td>
-                <td>{t.deadline_internal ?? '—'}</td>
-                <td>{t.deadline_ext ?? '—'}</td>
-                <td><span class={`tag ${statusClass(t.status)}`}>{t.status}</span></td>
-                <td style="color: var(--text-muted); font-size: 0.9rem;">{t.note ?? '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )}
-
-  <!-- Thanh toán + Hợp đồng -->
-  <div class="grid-cols-2">
-
-    {payment_items && payment_items.length > 0 && (
-      <div class="section-block">
-        <h2>Thanh toán</h2>
+    <section class="section">
+      <h2 class="section-title">Overview Task</h2>
+      <div class="card glass">
         <div class="table-responsive">
           <table class="modern-table">
             <thead>
               <tr>
-                <th>Đối tác</th>
-                <th>Loại</th>
-                <th>Hạn TT</th>
-                <th>Số tiền (VNĐ)</th>
-                <th>Tình trạng</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payment_items.map((p) => (
-                <tr>
-                  <td style="font-weight: 500;">{p.partner}</td>
-                  <td>
-                    <span class={`tag ${p.type === 'THU' ? 'success' : 'primary'}`}>{p.type}</span>
-                  </td>
-                  <td>
-                    <span style={p.overdue_days > 0 ? 'color: var(--danger);' : ''}>
-                      {p.due_date}
-                      {p.overdue_days > 0 && <span style="font-size: 0.75rem;"> (+{p.overdue_days}d)</span>}
-                    </span>
-                  </td>
-                  <td>{p.amount}đ</td>
-                  <td><span class={`tag ${statusClass(p.status)}`}>{p.status}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    )}
-
-    {contract_items && contract_items.length > 0 && (
-      <div class="section-block">
-        <h2>Hợp đồng & BBNT</h2>
-        <div class="table-responsive">
-          <table class="modern-table">
-            <thead>
-              <tr>
-                <th>Bên ký</th>
-                <th>Văn bản</th>
+                <th>Task</th>
+                <th>Deadline</th>
+                <th>Ưu tiên</th>
                 <th>Status</th>
                 <th>Note</th>
               </tr>
             </thead>
             <tbody>
-              {contract_items.map((c) => (
+              {overview_tasks.map((t) => (
                 <tr>
-                  <td style="font-weight: 500;">{c.partner}</td>
-                  <td>{c.doc}</td>
-                  <td><span class={`tag ${statusClass(c.status)}`}>{c.status}</span></td>
-                  <td style="color: var(--text-muted); font-size: 0.9rem;">{c.note ?? '—'}</td>
+                  <td class="cell-bold">{t.task}</td>
+                  <td>{t.deadline ?? '—'}</td>
+                  <td>
+                    {t.priority
+                      ? <span class="tag danger">{t.priority}</span>
+                      : <span class="cell-muted">—</span>
+                    }
+                  </td>
+                  <td><span class={`tag ${statusClass(t.status)}`}>{t.status}</span></td>
+                  <td class="cell-muted">{t.note ?? '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-    )}
+    </section>
+  )}
 
-  </div>
+  <!-- Account Task (Task Management) -->
+  {account_tasks && account_tasks.length > 0 && (
+    <section class="section">
+      <h2 class="section-title">Task Management</h2>
+      <div class="card glass">
+        <div class="table-responsive">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Hạng mục</th>
+                <th>Tiến độ</th>
+                <th>DL Internal</th>
+                <th>DL EXT/Air</th>
+                <th>Status</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {account_tasks.map((t) => (
+                <tr>
+                  <td class="cell-bold">{t.title}</td>
+                  <td>
+                    <div class="inline-progress">
+                      <span class="inline-progress-value">{t.progress}%</span>
+                      <div class="inline-progress-track">
+                        <div class="inline-progress-fill" style={`width:${t.progress}%; background:${progressGradient(t.progress)}`}></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{t.deadline_internal ?? '—'}</td>
+                  <td>{t.deadline_ext ?? '—'}</td>
+                  <td><span class={`tag ${statusClass(t.status)}`}>{t.status}</span></td>
+                  <td class="cell-muted">{t.note ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  )}
 
-  <!-- Iframe Google Sheet gốc -->
+  <!-- Thanh toán + Hợp đồng -->
+  {(payment_items || contract_items) && (
+    <div class="two-col">
+      {payment_items && payment_items.length > 0 && (
+        <section class="section">
+          <h2 class="section-title">Thanh toán</h2>
+          <div class="card glass">
+            <div class="table-responsive">
+              <table class="modern-table compact">
+                <thead>
+                  <tr>
+                    <th>Đối tác</th>
+                    <th>Loại</th>
+                    <th>Hạn TT</th>
+                    <th>Số tiền</th>
+                    <th>Tình trạng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payment_items.map((p) => (
+                    <tr>
+                      <td class="cell-bold">{p.partner}</td>
+                      <td><span class={`tag ${p.type === 'THU' ? 'success' : 'primary'}`}>{p.type}</span></td>
+                      <td>
+                        <span class={p.overdue_days > 0 ? 'cell-danger' : ''}>
+                          {p.due_date}
+                          {p.overdue_days > 0 && <span class="overdue-badge">+{p.overdue_days}d</span>}
+                        </span>
+                      </td>
+                      <td>{p.amount}đ</td>
+                      <td><span class={`tag ${statusClass(p.status)}`}>{p.status}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {contract_items && contract_items.length > 0 && (
+        <section class="section">
+          <h2 class="section-title">Hợp đồng & BBNT</h2>
+          <div class="card glass">
+            <div class="table-responsive">
+              <table class="modern-table compact">
+                <thead>
+                  <tr>
+                    <th>Bên ký</th>
+                    <th>Văn bản</th>
+                    <th>Status</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contract_items.map((c) => (
+                    <tr>
+                      <td class="cell-bold">{c.partner}</td>
+                      <td>{c.doc}</td>
+                      <td><span class={`tag ${statusClass(c.status)}`}>{c.status}</span></td>
+                      <td class="cell-muted">{c.note ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+    </div>
+  )}
+
+  <!-- Iframe Google Sheet -->
   {sheet_embed_url && (
-    <div class="section-block">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2>Data Nguồn (Google Sheet)</h2>
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title" style="margin-bottom:0;">Data Nguồn (Google Sheet)</h2>
         {sheet_url && (
-          <a href={sheet_url} target="_blank" style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem;">
+          <a href={sheet_url} target="_blank" class="link-external">
             Mở toàn màn hình ↗
           </a>
         )}
@@ -250,57 +263,113 @@ function progressColor(pct: number): string {
       <div class="iframe-container glass">
         <iframe src={sheet_embed_url}></iframe>
       </div>
-    </div>
+    </section>
   )}
 
-  <!-- Fallback: Task từ CMS (nếu không có data tĩnh) -->
+  <!-- Fallback: CMS tasks -->
   {!account_tasks && (
-    <div class="section-block" style="margin-top: 32px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h2>Task Management</h2>
-        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`}
-          style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem;">
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title" style="margin-bottom:0;">Task Management</h2>
+        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`} class="link-external">
           + Thêm task mới
         </a>
       </div>
-      <div class="glass" style="padding: 40px; text-align: center; color: var(--text-muted);">
+      <div class="card glass empty-state">
         <p>Chưa có task nào cho {title}.</p>
       </div>
-    </div>
+    </section>
   )}
 
 </Layout>
 
 <style>
-  .brand-header {
-    padding: 32px;
+  /* Hero */
+  .hero {
+    padding: 28px 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 24px;
     flex-wrap: wrap;
-    gap: 16px;
   }
-  .brand-title {
+  .hero-left {
     display: flex;
     align-items: center;
     gap: 20px;
   }
-  .logo-placeholder {
-    width: 64px;
-    height: 64px;
+  .hero-logo {
+    width: 56px;
+    height: 56px;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
     font-weight: 700;
     flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
   }
-  .brand-progress-header {
+  .hero-title {
+    font-size: 1.6rem;
+    margin-bottom: 2px;
+  }
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+  .hero-right {
     text-align: right;
-    color: var(--text-muted);
     flex-shrink: 0;
+  }
+  .hero-progress-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .hero-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-progress-track {
+    width: 160px;
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .hero-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .hero-progress-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    min-width: 40px;
+  }
+
+  /* Sections */
+  .section {
+    margin-top: 32px;
+  }
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: 0.01em;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  /* Cards */
+  .card {
+    padding: 4px;
+    overflow: hidden;
   }
 
   /* KPI Grid */
@@ -309,44 +378,150 @@ function progressColor(pct: number): string {
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
   .kpi-card {
-    padding: 20px;
+    padding: 22px 20px 18px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0.5;
   }
   .kpi-label {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
-  .kpi-numbers {
+  .kpi-main {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
+    margin-top: 2px;
   }
-  .kpi-stat {
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
-  }
-  .kpi-value {
-    font-size: 1.8rem;
+  .kpi-big {
+    font-size: 1.7rem;
     font-weight: 700;
     line-height: 1;
   }
-  .kpi-unit {
-    font-size: 0.85rem;
+  .kpi-of {
+    font-size: 0.9rem;
     color: var(--text-muted);
+    font-weight: 400;
   }
-  .kpi-note {
-    font-size: 0.78rem;
-    color: var(--warning);
+  .kpi-bar-wrap {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .kpi-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  .kpi-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 4px;
   }
+  .kpi-pct {
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .kpi-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
 
+  /* Two Col */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 32px;
+  }
+  .two-col .section {
+    margin-top: 0;
+  }
   @media (max-width: 1024px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* Table overrides */
+  .modern-table.compact td,
+  .modern-table.compact th {
+    padding: 12px;
+    font-size: 0.88rem;
+  }
+
+  /* Inline progress in table cells */
+  .inline-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .inline-progress-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 34px;
+    color: var(--text-main);
+  }
+  .inline-progress-track {
+    width: 80px;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .inline-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* Cell utilities */
+  .cell-bold { font-weight: 500; }
+  .cell-muted { color: var(--text-muted); font-size: 0.88rem; }
+  .cell-danger { color: var(--danger); }
+  .overdue-badge {
+    font-size: 0.7rem;
+    background: rgba(239,68,68,0.2);
+    color: #f87171;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+
+  /* Links */
+  .link-external {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .link-external:hover { opacity: 0.8; }
+
+  /* Empty state */
+  .empty-state {
+    padding: 48px;
+    text-align: center;
+    color: var(--text-muted);
   }
 </style>
