@@ -23,7 +23,7 @@ jobs:
       - name: Install, build, and upload your site
         uses: withastro/action@v3
         with:
-          node-version: 20 # Phiên bản Node.js sử dụng để build
+          node-version: 22 # Phiên bản Node.js sử dụng để build
           # package-manager: npm # Mặc định tự động nhận diện theo package-lock.json
 
   deploy:
