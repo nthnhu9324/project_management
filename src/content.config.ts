@@ -1,7 +1,8 @@
-import { z, defineCollection } from 'astro:content';
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const brandsCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/brands' }),
   schema: z.object({
     title: z.string(),
     leader: z.string().optional(),
@@ -12,11 +13,11 @@ const brandsCollection = defineCollection({
 });
 
 const tasksCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/tasks' }),
   schema: z.object({
     title: z.string(),
     brand: z.string(),
-    date: z.date().optional(),
+    date: z.coerce.date().optional(),
     category: z.string().optional(),
     kpi: z.string().optional(),
     post: z.string().optional(),
@@ -24,23 +25,23 @@ const tasksCollection = defineCollection({
     actual: z.string().optional(),
     status: z.enum(['Not Started', 'In Progress', 'Pending', 'Completed', 'Canceled']).default('Not Started'),
     progress: z.number().min(0).max(100).default(0),
-    deadline_ext: z.date().optional(),
-    deadline_internal: z.date().optional(),
+    deadline_ext: z.coerce.date().optional(),
+    deadline_internal: z.coerce.date().optional(),
     attachment_link: z.string().optional(),
   }),
 });
 
 const lessonsCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/lessons' }),
   schema: z.object({
     title: z.string(),
-    date: z.date().optional(),
+    date: z.coerce.date().optional(),
     brand: z.string().optional(),
   }),
 });
 
 const resourcesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/resources' }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
