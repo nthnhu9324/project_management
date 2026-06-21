@@ -2,7 +2,6 @@ backend:
   name: github
   repo: nthnhu9324/project_management
   branch: main
-  site_domain: nthnhu9324.github.io
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
