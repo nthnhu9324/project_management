@@ -29,49 +29,60 @@ function stClass(s: string): string {
   };
   return m[s] ?? '';
 }
+
+function getProgressColor(pct: number): string {
+  if (pct >= 100) return 'var(--success)';
+  if (pct >= 70) return 'var(--warning)';
+  if (pct >= 50) return 'var(--accent-primary)';
+  return 'var(--danger)';
+}
 ---
 
 <Layout title={title}>
 
   <!-- ═══ HERO ═══ -->
-  <div class="hero">
+  <div class="hero glass">
     <div class="hero-left">
       <div class="avatar">{initials}</div>
       <div>
         <h1 class="brand-name">{title}</h1>
         <p class="brand-meta">
-          {leader && <span>{leader}</span>}
+          {leader && <span>Leader: {leader}</span>}
           {core_service && <span> · {core_service}</span>}
         </p>
       </div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-label">Overall</div>
+      <div class="hero-stat-label">Overall Progress</div>
       <div class="hero-stat-number">{overall_progress}<span class="hero-stat-pct">%</span></div>
-      <div class="mini-bar"><div class="mini-bar-fill" style={`width:${overall_progress}%`}></div></div>
+      <div class="progress-container" style="width: 140px; margin-top: 8px;">
+        <div class="progress-bar" style={`width: ${overall_progress}%`}></div>
+      </div>
     </div>
   </div>
 
   <!-- ═══ KPI CARDS ═══ -->
   {kpi_items && kpi_items.length > 0 && (
-    <div class="block">
-      <h2 class="block-title">KPI Tổng quan</h2>
-      <div class="kpi-row">
+    <div class="section-block">
+      <h2 class="section-title">KPI Tổng quan</h2>
+      <div class="grid-cols-4 kpi-grid">
         {kpi_items.map((item) => {
           const pct = Math.round((item.post / item.kpi) * 100);
-          const color = pct >= 100 ? '#34d399' : pct >= 70 ? '#fbbf24' : '#f87171';
+          const color = getProgressColor(pct);
           return (
-            <div class="kpi">
+            <div class="glass kpi-card">
               <div class="kpi-top">
                 <span class="kpi-name">{item.label}</span>
-                <span class="kpi-badge" style={`background:${color}20; color:${color}`}>{pct}%</span>
+                <span class="kpi-badge" style={`color: ${color}; background: ${color}20;`}>{pct}%</span>
               </div>
               <div class="kpi-num">
-                <span class="kpi-big" style={`color:${color}`}>{item.post.toLocaleString()}</span>
-                <span class="kpi-of">/{item.kpi.toLocaleString()}</span>
+                <span class="kpi-big">{item.post.toLocaleString()}</span>
+                <span class="kpi-of">/ {item.kpi.toLocaleString()}</span>
               </div>
-              <div class="kpi-track"><div class="kpi-fill" style={`width:${Math.min(pct,100)}%; background:${color}`}></div></div>
-              {item.note && <span class="kpi-hint">{item.note}</span>}
+              <div class="progress-container" style="margin-top: 12px; height: 4px;">
+                <div class="progress-bar" style={`width: ${Math.min(pct, 100)}%; background: ${color};`}></div>
+              </div>
+              {item.note && <div class="kpi-note">{item.note}</div>}
             </div>
           );
         })}
@@ -81,21 +92,27 @@ function stClass(s: string): string {
 
   <!-- ═══ OVERVIEW TASK ═══ -->
   {overview_tasks && overview_tasks.length > 0 && (
-    <div class="block">
-      <h2 class="block-title">Overview Task</h2>
-      <div class="tbl-wrap">
-        <table class="tbl">
-          <thead><tr>
-            <th>Task</th><th>Deadline</th><th>Ưu tiên</th><th>Status</th><th>Note</th>
-          </tr></thead>
+    <div class="section-block">
+      <h2 class="section-title">Overview Task</h2>
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Deadline</th>
+              <th>Ưu tiên</th>
+              <th>Status</th>
+              <th>Note</th>
+            </tr>
+          </thead>
           <tbody>
             {overview_tasks.map((t) => (
               <tr>
-                <td class="fw500">{t.task}</td>
-                <td>{t.deadline ?? '—'}</td>
-                <td>{t.priority ? <span class="tag danger">{t.priority}</span> : '—'}</td>
+                <td style="font-weight: 500;">{t.task}</td>
+                <td style="color: var(--text-muted);">{t.deadline ?? '—'}</td>
+                <td>{t.priority ? <span class="tag danger">{t.priority}</span> : <span style="color: var(--text-muted);">—</span>}</td>
                 <td><span class={`tag ${stClass(t.status)}`}>{t.status}</span></td>
-                <td class="muted">{t.note ?? '—'}</td>
+                <td style="color: var(--text-muted); font-size: 0.9rem;">{t.note ?? '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -106,29 +123,38 @@ function stClass(s: string): string {
 
   <!-- ═══ TASK MANAGEMENT ═══ -->
   {account_tasks && account_tasks.length > 0 && (
-    <div class="block">
-      <h2 class="block-title">Task Management</h2>
-      <div class="tbl-wrap">
-        <table class="tbl">
-          <thead><tr>
-            <th>Hạng mục</th><th>Tiến độ</th><th>DL Internal</th><th>DL EXT/Air</th><th>Status</th><th>Note</th>
-          </tr></thead>
+    <div class="section-block">
+      <h2 class="section-title">Task Management</h2>
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Hạng mục</th>
+              <th>Tiến độ</th>
+              <th>DL Internal</th>
+              <th>DL EXT/Air</th>
+              <th>Status</th>
+              <th>Note</th>
+            </tr>
+          </thead>
           <tbody>
             {account_tasks.map((t) => {
-              const c = t.progress >= 90 ? '#34d399' : t.progress >= 50 ? '#60a5fa' : '#fbbf24';
+              const color = getProgressColor(t.progress);
               return (
                 <tr>
-                  <td class="fw500">{t.title}</td>
+                  <td style="font-weight: 500;">{t.title}</td>
                   <td>
-                    <div class="prog-cell">
-                      <span class="prog-num" style={`color:${c}`}>{t.progress}%</span>
-                      <div class="prog-track"><div class="prog-fill" style={`width:${t.progress}%;background:${c}`}></div></div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <span style={`font-weight: 600; font-size: 0.85rem; color: ${color}; min-width: 36px;`}>{t.progress}%</span>
+                      <div class="progress-container" style="width: 100px; height: 6px;">
+                        <div class="progress-bar" style={`width: ${t.progress}%; background: ${color};`}></div>
+                      </div>
                     </div>
                   </td>
-                  <td>{t.deadline_internal ?? '—'}</td>
-                  <td>{t.deadline_ext ?? '—'}</td>
+                  <td style="color: var(--text-muted);">{t.deadline_internal ?? '—'}</td>
+                  <td style="color: var(--text-muted);">{t.deadline_ext ?? '—'}</td>
                   <td><span class={`tag ${stClass(t.status)}`}>{t.status}</span></td>
-                  <td class="muted">{t.note ?? '—'}</td>
+                  <td style="color: var(--text-muted); font-size: 0.9rem;">{t.note ?? '—'}</td>
                 </tr>
               );
             })}
@@ -140,23 +166,31 @@ function stClass(s: string): string {
 
   <!-- ═══ THANH TOÁN + HỢP ĐỒNG ═══ -->
   {(payment_items || contract_items) && (
-    <div class="split">
+    <div class="grid-cols-2">
       {payment_items && payment_items.length > 0 && (
-        <div class="block">
-          <h2 class="block-title">Thanh toán</h2>
-          <div class="tbl-wrap">
-            <table class="tbl">
-              <thead><tr><th>Đối tác</th><th>Loại</th><th>Hạn TT</th><th>Số tiền</th><th>Tình trạng</th></tr></thead>
+        <div class="section-block">
+          <h2 class="section-title">Thanh toán</h2>
+          <div class="table-responsive">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>Đối tác</th>
+                  <th>Loại</th>
+                  <th>Hạn TT</th>
+                  <th>Số tiền</th>
+                  <th>Tình trạng</th>
+                </tr>
+              </thead>
               <tbody>
                 {payment_items.map((p) => (
                   <tr>
-                    <td class="fw500">{p.partner}</td>
-                    <td><span class={`tag ${p.type==='THU'?'success':'primary'}`}>{p.type}</span></td>
-                    <td class={p.overdue_days > 0 ? 'txt-danger' : ''}>
+                    <td style="font-weight: 500;">{p.partner}</td>
+                    <td><span class={`tag ${p.type === 'THU' ? 'success' : 'primary'}`}>{p.type}</span></td>
+                    <td style={p.overdue_days > 0 ? 'color: var(--danger); font-weight: 500;' : 'color: var(--text-muted);'}>
                       {p.due_date}
-                      {p.overdue_days > 0 && <span class="od-badge">+{p.overdue_days}d</span>}
+                      {p.overdue_days > 0 && <span style="font-size: 0.75rem; margin-left: 4px;">(+{p.overdue_days}d)</span>}
                     </td>
-                    <td>{p.amount}đ</td>
+                    <td style="font-weight: 500;">{p.amount}đ</td>
                     <td><span class={`tag ${stClass(p.status)}`}>{p.status}</span></td>
                   </tr>
                 ))}
@@ -166,18 +200,25 @@ function stClass(s: string): string {
         </div>
       )}
       {contract_items && contract_items.length > 0 && (
-        <div class="block">
-          <h2 class="block-title">Hợp đồng & BBNT</h2>
-          <div class="tbl-wrap">
-            <table class="tbl">
-              <thead><tr><th>Bên ký</th><th>Văn bản</th><th>Status</th><th>Note</th></tr></thead>
+        <div class="section-block">
+          <h2 class="section-title">Hợp đồng & BBNT</h2>
+          <div class="table-responsive">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>Bên ký</th>
+                  <th>Văn bản</th>
+                  <th>Status</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
               <tbody>
                 {contract_items.map((c) => (
                   <tr>
-                    <td class="fw500">{c.partner}</td>
+                    <td style="font-weight: 500;">{c.partner}</td>
                     <td>{c.doc}</td>
                     <td><span class={`tag ${stClass(c.status)}`}>{c.status}</span></td>
-                    <td class="muted">{c.note ?? '—'}</td>
+                    <td style="color: var(--text-muted); font-size: 0.9rem;">{c.note ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -190,10 +231,14 @@ function stClass(s: string): string {
 
   <!-- ═══ IFRAME SHEET ═══ -->
   {sheet_embed_url && (
-    <div class="block">
-      <div class="block-head">
-        <h2 class="block-title" style="margin:0">Data Nguồn (Google Sheet)</h2>
-        {sheet_url && <a href={sheet_url} target="_blank" class="ext-link">Mở toàn màn hình ↗</a>}
+    <div class="section-block">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 class="section-title" style="margin-bottom: 0;">Data Nguồn (Google Sheet)</h2>
+        {sheet_url && (
+          <a href={sheet_url} target="_blank" style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+            Mở toàn màn hình ↗
+          </a>
+        )}
       </div>
       <div class="iframe-container glass">
         <iframe src={sheet_embed_url}></iframe>
@@ -203,144 +248,155 @@ function stClass(s: string): string {
 
   <!-- ═══ FALLBACK ═══ -->
   {!account_tasks && (
-    <div class="block">
-      <div class="block-head">
-        <h2 class="block-title" style="margin:0">Task Management</h2>
-        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`} class="ext-link">+ Thêm task mới</a>
+    <div class="section-block">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 class="section-title" style="margin-bottom: 0;">Task Management</h2>
+        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`} style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+          + Thêm task mới
+        </a>
       </div>
-      <div class="empty glass">Chưa có task nào cho {title}.</div>
+      <div class="glass" style="padding: 48px; text-align: center; color: var(--text-muted);">
+        Chưa có task nào cho {title}.
+      </div>
     </div>
   )}
 
 </Layout>
 
 <style>
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-main);
+  }
+
   /* ── HERO ── */
   .hero {
-    background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(139,92,246,0.12));
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    padding: 28px 32px;
+    padding: 32px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 24px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
   }
-  .hero-left { display:flex; align-items:center; gap:20px; }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  }
+  .hero-left { 
+    display: flex; 
+    align-items: center; 
+    gap: 24px; 
+  }
   .avatar {
-    width: 52px; height: 52px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 14px;
-    display: grid; place-items: center;
-    font-size: 1.2rem; font-weight: 700;
-    box-shadow: 0 6px 20px rgba(59,130,246,0.35);
+    width: 64px; 
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border-radius: 16px;
+    display: grid; 
+    place-items: center;
+    font-size: 1.5rem; 
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
     flex-shrink: 0;
   }
-  .brand-name { font-size:1.5rem; margin-bottom:2px; }
-  .brand-meta { font-size:0.88rem; color:var(--text-muted); }
-  .hero-stat { text-align:right; }
-  .hero-stat-label { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
-  .hero-stat-number { font-size:2.2rem; font-weight:700; line-height:1; }
-  .hero-stat-pct { font-size:1rem; color:var(--text-muted); font-weight:400; }
-  .mini-bar { width:120px; height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; margin-top:8px; margin-left:auto; }
-  .mini-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#3b82f6,#8b5cf6); transition:width .5s ease; }
-
-  /* ── BLOCKS ── */
-  .block { margin-top:36px; }
-  .block-title { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--text-main); letter-spacing:0.01em; }
-  .block-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
-  .ext-link { color:var(--accent-primary); text-decoration:none; font-size:0.85rem; font-weight:500; }
-  .ext-link:hover { text-decoration:underline; }
+  .brand-name { 
+    font-size: 1.75rem; 
+    margin-bottom: 4px; 
+    font-weight: 700;
+  }
+  .brand-meta { 
+    font-size: 0.95rem; 
+    color: var(--text-muted); 
+  }
+  .hero-stat { 
+    text-align: right; 
+  }
+  .hero-stat-label { 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+    margin-bottom: 8px; 
+    font-weight: 600;
+  }
+  .hero-stat-number { 
+    font-size: 2.5rem; 
+    font-weight: 700; 
+    line-height: 1; 
+  }
+  .hero-stat-pct { 
+    font-size: 1.25rem; 
+    color: var(--text-muted); 
+    font-weight: 500; 
+    margin-left: 4px;
+  }
 
   /* ── KPI CARDS ── */
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
+  .kpi-grid {
+    margin-bottom: 48px;
   }
-  @media(max-width:1100px){ .kpi-row{ grid-template-columns:repeat(2,1fr); } }
-
-  .kpi {
-    background: rgba(30,41,59,0.6);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px;
-    padding: 18px 20px;
+  .kpi-card {
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    transition: border-color 0.2s, transform 0.2s;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .kpi:hover {
-    border-color: rgba(255,255,255,0.15);
-    transform: translateY(-2px);
+  .kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
   }
-  .kpi-top { display:flex; justify-content:space-between; align-items:center; }
-  .kpi-name { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; }
-  .kpi-badge { font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:6px; }
-  .kpi-num { display:flex; align-items:baseline; gap:4px; }
-  .kpi-big { font-size:1.6rem; font-weight:700; line-height:1; }
-  .kpi-of { font-size:0.82rem; color:var(--text-muted); }
-  .kpi-track { height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
-  .kpi-fill { height:100%; border-radius:2px; transition:width .5s ease; }
-  .kpi-hint { font-size:0.72rem; color:var(--text-muted); opacity:0.7; }
-
-  /* ── TABLES ── */
-  .tbl-wrap { overflow-x:auto; padding-bottom:4px; }
-  .tbl {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.88rem;
+  .kpi-top { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
   }
-  .tbl th {
-    text-align: left;
-    padding: 10px 14px;
-    color: var(--text-muted);
+  .kpi-name { 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+    font-weight: 600; 
+  }
+  .kpi-badge { 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+    padding: 4px 10px; 
+    border-radius: 8px; 
+  }
+  .kpi-num { 
+    display: flex; 
+    align-items: baseline; 
+    gap: 6px; 
+    margin-top: 8px;
+  }
+  .kpi-big { 
+    font-size: 2rem; 
+    font-weight: 700; 
+    line-height: 1; 
+    color: var(--text-main);
+  }
+  .kpi-of { 
+    font-size: 1rem; 
+    color: var(--text-muted); 
     font-weight: 500;
-    font-size: 0.76rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    white-space: nowrap;
   }
-  .tbl td {
-    padding: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    white-space: nowrap;
+  .kpi-note { 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    margin-top: 8px;
   }
-  .tbl tbody tr {
-    transition: background 0.15s;
+  
+  @media(max-width: 1200px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   }
-  .tbl tbody tr:hover {
-    background: rgba(255,255,255,0.03);
-  }
-  .fw500 { font-weight:500; }
-  .muted { color:var(--text-muted); font-size:0.85rem; }
-  .txt-danger { color:var(--danger); }
-  .od-badge {
-    font-size:0.68rem;
-    background:rgba(239,68,68,0.2);
-    color:#f87171;
-    padding:1px 5px;
-    border-radius:4px;
-    margin-left:4px;
-  }
-
-  /* ── INLINE PROGRESS (in table) ── */
-  .prog-cell { display:flex; align-items:center; gap:8px; }
-  .prog-num { font-size:0.8rem; font-weight:600; min-width:36px; }
-  .prog-track { width:72px; height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; }
-  .prog-fill { height:100%; border-radius:3px; transition:width .4s ease; }
-
-  /* ── TWO-COL ── */
-  .split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 36px;
-  }
-  .split .block { margin-top:0; }
-  @media(max-width:1024px){ .split{ grid-template-columns:1fr; } }
-
-  /* ── EMPTY STATE ── */
-  .empty { padding:48px; text-align:center; color:var(--text-muted); }
 </style>
