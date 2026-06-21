@@ -20,508 +20,327 @@ const {
 
 const initials = title.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
 
-function statusClass(status: string): string {
-  const map: Record<string, string> = {
+function stClass(s: string): string {
+  const m: Record<string, string> = {
     'Done': 'success', 'Completed': 'success',
     'In Progress': 'warning', 'Processing': 'warning',
-    'New Brief': 'primary', 'Not Started': 'primary', 'Pending': 'primary',
-    'Canceled': 'danger',
-    'Tới hạn': 'warning',
+    'New Brief': 'primary', 'Not Started': '', 'Pending': 'primary',
+    'Canceled': 'danger', 'Tới hạn': 'warning',
   };
-  return map[status] ?? '';
-}
-
-function progressGradient(pct: number): string {
-  if (pct >= 90) return 'linear-gradient(90deg, #10b981, #34d399)';
-  if (pct >= 50) return 'linear-gradient(90deg, #3b82f6, #8b5cf6)';
-  return 'linear-gradient(90deg, #f59e0b, #ef4444)';
-}
-
-function kpiColor(pct: number): string {
-  if (pct >= 100) return '#34d399';
-  if (pct >= 70) return '#fbbf24';
-  return '#f87171';
+  return m[s] ?? '';
 }
 ---
 
 <Layout title={title}>
 
-  <!-- Brand Header -->
-  <section class="hero glass">
+  <!-- ═══ HERO ═══ -->
+  <div class="hero">
     <div class="hero-left">
-      <div class="hero-logo">{initials}</div>
-      <div class="hero-info">
-        <h1 class="hero-title">{title}</h1>
-        <p class="hero-subtitle">
+      <div class="avatar">{initials}</div>
+      <div>
+        <h1 class="brand-name">{title}</h1>
+        <p class="brand-meta">
           {leader && <span>{leader}</span>}
           {core_service && <span> · {core_service}</span>}
         </p>
       </div>
     </div>
-    <div class="hero-right">
-      <div class="hero-progress-label">Overall Progress</div>
-      <div class="hero-progress-row">
-        <div class="hero-progress-track">
-          <div class="hero-progress-fill" style={`width:${overall_progress}%; background:${progressGradient(overall_progress)}`}></div>
-        </div>
-        <span class="hero-progress-value">{overall_progress}%</span>
-      </div>
+    <div class="hero-stat">
+      <div class="hero-stat-label">Overall</div>
+      <div class="hero-stat-number">{overall_progress}<span class="hero-stat-pct">%</span></div>
+      <div class="mini-bar"><div class="mini-bar-fill" style={`width:${overall_progress}%`}></div></div>
     </div>
-  </section>
+  </div>
 
-  <!-- KPI Stat Cards -->
+  <!-- ═══ KPI CARDS ═══ -->
   {kpi_items && kpi_items.length > 0 && (
-    <section class="section">
-      <h2 class="section-title">KPI Tổng quan</h2>
-      <div class="kpi-grid">
+    <div class="block">
+      <h2 class="block-title">KPI Tổng quan</h2>
+      <div class="kpi-row">
         {kpi_items.map((item) => {
           const pct = Math.round((item.post / item.kpi) * 100);
+          const color = pct >= 100 ? '#34d399' : pct >= 70 ? '#fbbf24' : '#f87171';
           return (
-            <div class="kpi-card glass">
-              <span class="kpi-label">{item.label}</span>
-              <div class="kpi-main">
-                <span class="kpi-big" style={`color:${kpiColor(pct)}`}>{item.post.toLocaleString()}</span>
-                <span class="kpi-of">/ {item.kpi.toLocaleString()}</span>
+            <div class="kpi">
+              <div class="kpi-top">
+                <span class="kpi-name">{item.label}</span>
+                <span class="kpi-badge" style={`background:${color}20; color:${color}`}>{pct}%</span>
               </div>
-              <div class="kpi-bar-wrap">
-                <div class="kpi-bar" style={`width:${Math.min(pct,100)}%; background:${progressGradient(pct)}`}></div>
+              <div class="kpi-num">
+                <span class="kpi-big" style={`color:${color}`}>{item.post.toLocaleString()}</span>
+                <span class="kpi-of">/{item.kpi.toLocaleString()}</span>
               </div>
-              <div class="kpi-footer">
-                <span class="kpi-pct" style={`color:${kpiColor(pct)}`}>{pct}%</span>
-                {item.note && <span class="kpi-note">{item.note}</span>}
-              </div>
+              <div class="kpi-track"><div class="kpi-fill" style={`width:${Math.min(pct,100)}%; background:${color}`}></div></div>
+              {item.note && <span class="kpi-hint">{item.note}</span>}
             </div>
           );
         })}
       </div>
-    </section>
+    </div>
   )}
 
-  <!-- Overview Task -->
+  <!-- ═══ OVERVIEW TASK ═══ -->
   {overview_tasks && overview_tasks.length > 0 && (
-    <section class="section">
-      <h2 class="section-title">Overview Task</h2>
-      <div class="card glass">
-        <div class="table-responsive">
-          <table class="modern-table">
-            <thead>
+    <div class="block">
+      <h2 class="block-title">Overview Task</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>Task</th><th>Deadline</th><th>Ưu tiên</th><th>Status</th><th>Note</th>
+          </tr></thead>
+          <tbody>
+            {overview_tasks.map((t) => (
               <tr>
-                <th>Task</th>
-                <th>Deadline</th>
-                <th>Ưu tiên</th>
-                <th>Status</th>
-                <th>Note</th>
+                <td class="fw500">{t.task}</td>
+                <td>{t.deadline ?? '—'}</td>
+                <td>{t.priority ? <span class="tag danger">{t.priority}</span> : '—'}</td>
+                <td><span class={`tag ${stClass(t.status)}`}>{t.status}</span></td>
+                <td class="muted">{t.note ?? '—'}</td>
               </tr>
-            </thead>
-            <tbody>
-              {overview_tasks.map((t) => (
-                <tr>
-                  <td class="cell-bold">{t.task}</td>
-                  <td>{t.deadline ?? '—'}</td>
-                  <td>
-                    {t.priority
-                      ? <span class="tag danger">{t.priority}</span>
-                      : <span class="cell-muted">—</span>
-                    }
-                  </td>
-                  <td><span class={`tag ${statusClass(t.status)}`}>{t.status}</span></td>
-                  <td class="cell-muted">{t.note ?? '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </section>
+    </div>
   )}
 
-  <!-- Account Task (Task Management) -->
+  <!-- ═══ TASK MANAGEMENT ═══ -->
   {account_tasks && account_tasks.length > 0 && (
-    <section class="section">
-      <h2 class="section-title">Task Management</h2>
-      <div class="card glass">
-        <div class="table-responsive">
-          <table class="modern-table">
-            <thead>
-              <tr>
-                <th>Hạng mục</th>
-                <th>Tiến độ</th>
-                <th>DL Internal</th>
-                <th>DL EXT/Air</th>
-                <th>Status</th>
-                <th>Note</th>
-              </tr>
-            </thead>
-            <tbody>
-              {account_tasks.map((t) => (
+    <div class="block">
+      <h2 class="block-title">Task Management</h2>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>Hạng mục</th><th>Tiến độ</th><th>DL Internal</th><th>DL EXT/Air</th><th>Status</th><th>Note</th>
+          </tr></thead>
+          <tbody>
+            {account_tasks.map((t) => {
+              const c = t.progress >= 90 ? '#34d399' : t.progress >= 50 ? '#60a5fa' : '#fbbf24';
+              return (
                 <tr>
-                  <td class="cell-bold">{t.title}</td>
+                  <td class="fw500">{t.title}</td>
                   <td>
-                    <div class="inline-progress">
-                      <span class="inline-progress-value">{t.progress}%</span>
-                      <div class="inline-progress-track">
-                        <div class="inline-progress-fill" style={`width:${t.progress}%; background:${progressGradient(t.progress)}`}></div>
-                      </div>
+                    <div class="prog-cell">
+                      <span class="prog-num" style={`color:${c}`}>{t.progress}%</span>
+                      <div class="prog-track"><div class="prog-fill" style={`width:${t.progress}%;background:${c}`}></div></div>
                     </div>
                   </td>
                   <td>{t.deadline_internal ?? '—'}</td>
                   <td>{t.deadline_ext ?? '—'}</td>
-                  <td><span class={`tag ${statusClass(t.status)}`}>{t.status}</span></td>
-                  <td class="cell-muted">{t.note ?? '—'}</td>
+                  <td><span class={`tag ${stClass(t.status)}`}>{t.status}</span></td>
+                  <td class="muted">{t.note ?? '—'}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
-    </section>
+    </div>
   )}
 
-  <!-- Thanh toán + Hợp đồng -->
+  <!-- ═══ THANH TOÁN + HỢP ĐỒNG ═══ -->
   {(payment_items || contract_items) && (
-    <div class="two-col">
+    <div class="split">
       {payment_items && payment_items.length > 0 && (
-        <section class="section">
-          <h2 class="section-title">Thanh toán</h2>
-          <div class="card glass">
-            <div class="table-responsive">
-              <table class="modern-table compact">
-                <thead>
+        <div class="block">
+          <h2 class="block-title">Thanh toán</h2>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Đối tác</th><th>Loại</th><th>Hạn TT</th><th>Số tiền</th><th>Tình trạng</th></tr></thead>
+              <tbody>
+                {payment_items.map((p) => (
                   <tr>
-                    <th>Đối tác</th>
-                    <th>Loại</th>
-                    <th>Hạn TT</th>
-                    <th>Số tiền</th>
-                    <th>Tình trạng</th>
+                    <td class="fw500">{p.partner}</td>
+                    <td><span class={`tag ${p.type==='THU'?'success':'primary'}`}>{p.type}</span></td>
+                    <td class={p.overdue_days > 0 ? 'txt-danger' : ''}>
+                      {p.due_date}
+                      {p.overdue_days > 0 && <span class="od-badge">+{p.overdue_days}d</span>}
+                    </td>
+                    <td>{p.amount}đ</td>
+                    <td><span class={`tag ${stClass(p.status)}`}>{p.status}</span></td>
                   </tr>
-                </thead>
-                <tbody>
-                  {payment_items.map((p) => (
-                    <tr>
-                      <td class="cell-bold">{p.partner}</td>
-                      <td><span class={`tag ${p.type === 'THU' ? 'success' : 'primary'}`}>{p.type}</span></td>
-                      <td>
-                        <span class={p.overdue_days > 0 ? 'cell-danger' : ''}>
-                          {p.due_date}
-                          {p.overdue_days > 0 && <span class="overdue-badge">+{p.overdue_days}d</span>}
-                        </span>
-                      </td>
-                      <td>{p.amount}đ</td>
-                      <td><span class={`tag ${statusClass(p.status)}`}>{p.status}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </section>
+        </div>
       )}
-
       {contract_items && contract_items.length > 0 && (
-        <section class="section">
-          <h2 class="section-title">Hợp đồng & BBNT</h2>
-          <div class="card glass">
-            <div class="table-responsive">
-              <table class="modern-table compact">
-                <thead>
+        <div class="block">
+          <h2 class="block-title">Hợp đồng & BBNT</h2>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Bên ký</th><th>Văn bản</th><th>Status</th><th>Note</th></tr></thead>
+              <tbody>
+                {contract_items.map((c) => (
                   <tr>
-                    <th>Bên ký</th>
-                    <th>Văn bản</th>
-                    <th>Status</th>
-                    <th>Note</th>
+                    <td class="fw500">{c.partner}</td>
+                    <td>{c.doc}</td>
+                    <td><span class={`tag ${stClass(c.status)}`}>{c.status}</span></td>
+                    <td class="muted">{c.note ?? '—'}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {contract_items.map((c) => (
-                    <tr>
-                      <td class="cell-bold">{c.partner}</td>
-                      <td>{c.doc}</td>
-                      <td><span class={`tag ${statusClass(c.status)}`}>{c.status}</span></td>
-                      <td class="cell-muted">{c.note ?? '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </section>
+        </div>
       )}
     </div>
   )}
 
-  <!-- Iframe Google Sheet -->
+  <!-- ═══ IFRAME SHEET ═══ -->
   {sheet_embed_url && (
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title" style="margin-bottom:0;">Data Nguồn (Google Sheet)</h2>
-        {sheet_url && (
-          <a href={sheet_url} target="_blank" class="link-external">
-            Mở toàn màn hình ↗
-          </a>
-        )}
+    <div class="block">
+      <div class="block-head">
+        <h2 class="block-title" style="margin:0">Data Nguồn (Google Sheet)</h2>
+        {sheet_url && <a href={sheet_url} target="_blank" class="ext-link">Mở toàn màn hình ↗</a>}
       </div>
       <div class="iframe-container glass">
         <iframe src={sheet_embed_url}></iframe>
       </div>
-    </section>
+    </div>
   )}
 
-  <!-- Fallback: CMS tasks -->
+  <!-- ═══ FALLBACK ═══ -->
   {!account_tasks && (
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title" style="margin-bottom:0;">Task Management</h2>
-        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`} class="link-external">
-          + Thêm task mới
-        </a>
+    <div class="block">
+      <div class="block-head">
+        <h2 class="block-title" style="margin:0">Task Management</h2>
+        <a href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`} class="ext-link">+ Thêm task mới</a>
       </div>
-      <div class="card glass empty-state">
-        <p>Chưa có task nào cho {title}.</p>
-      </div>
-    </section>
+      <div class="empty glass">Chưa có task nào cho {title}.</div>
+    </div>
   )}
 
 </Layout>
 
 <style>
-  /* Hero */
+  /* ── HERO ── */
   .hero {
+    background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(139,92,246,0.12));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
     padding: 28px 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    flex-wrap: wrap;
   }
-  .hero-left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  .hero-logo {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  .hero-left { display:flex; align-items:center; gap:20px; }
+  .avatar {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     border-radius: 14px;
-    display: grid;
-    place-items: center;
-    font-size: 1.3rem;
-    font-weight: 700;
-    flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-  }
-  .hero-title {
-    font-size: 1.6rem;
-    margin-bottom: 2px;
-  }
-  .hero-subtitle {
-    font-size: 0.9rem;
-  }
-  .hero-right {
-    text-align: right;
+    display: grid; place-items: center;
+    font-size: 1.2rem; font-weight: 700;
+    box-shadow: 0 6px 20px rgba(59,130,246,0.35);
     flex-shrink: 0;
   }
-  .hero-progress-label {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-  .hero-progress-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .hero-progress-track {
-    width: 160px;
-    height: 8px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .hero-progress-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-  }
-  .hero-progress-value {
-    font-size: 1.1rem;
-    font-weight: 700;
-    min-width: 40px;
-  }
+  .brand-name { font-size:1.5rem; margin-bottom:2px; }
+  .brand-meta { font-size:0.88rem; color:var(--text-muted); }
+  .hero-stat { text-align:right; }
+  .hero-stat-label { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
+  .hero-stat-number { font-size:2.2rem; font-weight:700; line-height:1; }
+  .hero-stat-pct { font-size:1rem; color:var(--text-muted); font-weight:400; }
+  .mini-bar { width:120px; height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; margin-top:8px; margin-left:auto; }
+  .mini-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#3b82f6,#8b5cf6); transition:width .5s ease; }
 
-  /* Sections */
-  .section {
-    margin-top: 32px;
-  }
-  .section-title {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    letter-spacing: 0.01em;
-  }
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
+  /* ── BLOCKS ── */
+  .block { margin-top:36px; }
+  .block-title { font-size:1.05rem; font-weight:600; margin-bottom:14px; color:var(--text-main); letter-spacing:0.01em; }
+  .block-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .ext-link { color:var(--accent-primary); text-decoration:none; font-size:0.85rem; font-weight:500; }
+  .ext-link:hover { text-decoration:underline; }
 
-  /* Cards */
-  .card {
-    padding: 4px;
-    overflow: hidden;
-  }
-
-  /* KPI Grid */
-  .kpi-grid {
+  /* ── KPI CARDS ── */
+  .kpi-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 14px;
   }
-  @media (max-width: 1100px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  .kpi-card {
-    padding: 22px 20px 18px;
+  @media(max-width:1100px){ .kpi-row{ grid-template-columns:repeat(2,1fr); } }
+
+  .kpi {
+    background: rgba(30,41,59,0.6);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    position: relative;
-    overflow: hidden;
+    gap: 8px;
+    transition: border-color 0.2s, transform 0.2s;
   }
-  .kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-    opacity: 0.5;
+  .kpi:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
   }
-  .kpi-label {
-    font-size: 0.82rem;
+  .kpi-top { display:flex; justify-content:space-between; align-items:center; }
+  .kpi-name { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; }
+  .kpi-badge { font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:6px; }
+  .kpi-num { display:flex; align-items:baseline; gap:4px; }
+  .kpi-big { font-size:1.6rem; font-weight:700; line-height:1; }
+  .kpi-of { font-size:0.82rem; color:var(--text-muted); }
+  .kpi-track { height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+  .kpi-fill { height:100%; border-radius:2px; transition:width .5s ease; }
+  .kpi-hint { font-size:0.72rem; color:var(--text-muted); opacity:0.7; }
+
+  /* ── TABLES ── */
+  .tbl-wrap { overflow-x:auto; padding-bottom:4px; }
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  .tbl th {
+    text-align: left;
+    padding: 10px 14px;
     color: var(--text-muted);
     font-weight: 500;
+    font-size: 0.76rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    white-space: nowrap;
   }
-  .kpi-main {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-top: 2px;
+  .tbl td {
+    padding: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    white-space: nowrap;
   }
-  .kpi-big {
-    font-size: 1.7rem;
-    font-weight: 700;
-    line-height: 1;
+  .tbl tbody tr {
+    transition: background 0.15s;
   }
-  .kpi-of {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-weight: 400;
+  .tbl tbody tr:hover {
+    background: rgba(255,255,255,0.03);
   }
-  .kpi-bar-wrap {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 6px;
-  }
-  .kpi-bar {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.5s ease;
-  }
-  .kpi-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 4px;
-  }
-  .kpi-pct {
-    font-size: 0.78rem;
-    font-weight: 600;
-  }
-  .kpi-note {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    opacity: 0.8;
+  .fw500 { font-weight:500; }
+  .muted { color:var(--text-muted); font-size:0.85rem; }
+  .txt-danger { color:var(--danger); }
+  .od-badge {
+    font-size:0.68rem;
+    background:rgba(239,68,68,0.2);
+    color:#f87171;
+    padding:1px 5px;
+    border-radius:4px;
+    margin-left:4px;
   }
 
-  /* Two Col */
-  .two-col {
+  /* ── INLINE PROGRESS (in table) ── */
+  .prog-cell { display:flex; align-items:center; gap:8px; }
+  .prog-num { font-size:0.8rem; font-weight:600; min-width:36px; }
+  .prog-track { width:72px; height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; }
+  .prog-fill { height:100%; border-radius:3px; transition:width .4s ease; }
+
+  /* ── TWO-COL ── */
+  .split {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
-    margin-top: 32px;
+    margin-top: 36px;
   }
-  .two-col .section {
-    margin-top: 0;
-  }
-  @media (max-width: 1024px) {
-    .two-col { grid-template-columns: 1fr; }
-  }
+  .split .block { margin-top:0; }
+  @media(max-width:1024px){ .split{ grid-template-columns:1fr; } }
 
-  /* Table overrides */
-  .modern-table.compact td,
-  .modern-table.compact th {
-    padding: 12px;
-    font-size: 0.88rem;
-  }
-
-  /* Inline progress in table cells */
-  .inline-progress {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .inline-progress-value {
-    font-size: 0.8rem;
-    font-weight: 600;
-    min-width: 34px;
-    color: var(--text-main);
-  }
-  .inline-progress-track {
-    width: 80px;
-    height: 6px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .inline-progress-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.4s ease;
-  }
-
-  /* Cell utilities */
-  .cell-bold { font-weight: 500; }
-  .cell-muted { color: var(--text-muted); font-size: 0.88rem; }
-  .cell-danger { color: var(--danger); }
-  .overdue-badge {
-    font-size: 0.7rem;
-    background: rgba(239,68,68,0.2);
-    color: #f87171;
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-left: 4px;
-  }
-
-  /* Links */
-  .link-external {
-    color: var(--accent-primary);
-    text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 500;
-    transition: opacity 0.2s;
-  }
-  .link-external:hover { opacity: 0.8; }
-
-  /* Empty state */
-  .empty-state {
-    padding: 48px;
-    text-align: center;
-    color: var(--text-muted);
-  }
+  /* ── EMPTY STATE ── */
+  .empty { padding:48px; text-align:center; color:var(--text-muted); }
 </style>
