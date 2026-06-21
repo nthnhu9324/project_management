@@ -23,14 +23,14 @@ const { title } = Astro.props;
 					<h2>Workspace</h2>
 				</div>
 				<nav class="menu">
-					<a href={import.meta.env.BASE_URL} class="menu-item">Overview</a>
-					<a href={`${import.meta.env.BASE_URL}brands/fujimart`} class="menu-item">Fujimart</a>
-					<a href={`${import.meta.env.BASE_URL}brands/dominos`} class="menu-item">Dominos Pizza</a>
-					<a href={`${import.meta.env.BASE_URL}resources`} class="menu-item">Resources & Links</a>
-					<a href={`${import.meta.env.BASE_URL}lessons`} class="menu-item">Lessons Learned</a>
+					<a href={`${import.meta.env.BASE_URL}/`} class="menu-item">Overview</a>
+					<a href={`${import.meta.env.BASE_URL}/brands/fujimart`} class="menu-item">Fujimart</a>
+					<a href={`${import.meta.env.BASE_URL}/brands/dominos`} class="menu-item">Dominos Pizza</a>
+					<a href={`${import.meta.env.BASE_URL}/resources`} class="menu-item">Resources & Links</a>
+					<a href={`${import.meta.env.BASE_URL}/lessons`} class="menu-item">Lessons Learned</a>
 				</nav>
 				<div class="spacer" style="flex: 1;"></div>
-				<a href={`${import.meta.env.BASE_URL}admin`} class="menu-item admin-link">⚙️ CMS Admin</a>
+				<a href={`${import.meta.env.BASE_URL}/admin`} class="menu-item admin-link">⚙️ CMS Admin</a>
 			</aside>
 			<main class="main-content">
 				<slot />
