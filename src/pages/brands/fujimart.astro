@@ -8,56 +8,256 @@ import Layout from '../../layouts/Layout.astro';
 			<div class="logo-placeholder">F</div>
 			<div>
 				<h1>Fujimart</h1>
-				<p>Leader: You • Core Service: Khai trương Smart City</p>
+				<p>Brand: Fujimart • Dịch vụ: Chuỗi siêu thị</p>
 			</div>
 		</div>
 		<div class="brand-progress-header">
-			<span>Overall Progress: 75%</span>
+			<span>Chiến dịch Khai trương: 75%</span>
 			<div class="progress-container" style="width: 200px; margin-top: 8px;">
 				<div class="progress-bar" style="width: 75%"></div>
 			</div>
 		</div>
 	</div>
 
-	<h2 style="margin-top: 32px;">Task Management</h2>
-	<table class="modern-table">
-		<thead>
-			<tr>
-				<th>Hạng mục</th>
-				<th>Post / Content</th>
-				<th>Deadline (EXT)</th>
-				<th>Status</th>
-				<th>Progress</th>
-				<th>Action</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Bài PR</td>
-				<td>Bài khai trương Smart City</td>
-				<td>25/06/2026</td>
-				<td><span class="tag warning">In Progress</span></td>
-				<td>70%</td>
-				<td><a href="#" style="color: var(--accent-primary)">View Note</a></td>
-			</tr>
-			<tr>
-				<td>Design</td>
-				<td>Banner Homepage</td>
-				<td>20/06/2026</td>
-				<td><span class="tag success">Completed</span></td>
-				<td>100%</td>
-				<td><a href="#" style="color: var(--accent-primary)">Link Air</a></td>
-			</tr>
-			<tr>
-				<td>Payment</td>
-				<td>Thanh toán đợt 1</td>
-				<td>30/06/2026</td>
-				<td><span class="tag danger">Pending</span></td>
-				<td>0%</td>
-				<td><a href="#" style="color: var(--accent-primary)">Contract</a></td>
-			</tr>
-		</tbody>
-	</table>
+	<!-- Khối 1: Iframe Google Sheet Data Gốc -->
+	<div class="section-block" style="margin-top: 32px;">
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+			<h2>📊 Data Nguồn (Google Sheet)</h2>
+			<a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQnVxCFBkDH4kqE45_wzu-CXDDt46mmwu-oTuYZJX0_M3nFFmQQrmszy2PtTJMhhvR9Ybx5kRR2KbE9/pubhtml" target="_blank" style="color: var(--accent-primary); text-decoration: none;">🔗 Mở toàn màn hình</a>
+		</div>
+		<div class="iframe-container glass">
+			<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQnVxCFBkDH4kqE45_wzu-CXDDt46mmwu-oTuYZJX0_M3nFFmQQrmszy2PtTJMhhvR9Ybx5kRR2KbE9/pubhtml?widget=true&amp;headers=false"></iframe>
+		</div>
+	</div>
+
+	<!-- Khối 2: Overview Task -->
+	<div class="section-block">
+		<h2>🎯 Overview Task</h2>
+		<div class="table-responsive">
+			<table class="modern-table">
+				<thead>
+					<tr>
+						<th>Task</th>
+						<th>Description</th>
+						<th>Deadline</th>
+						<th>Ưu tiên</th>
+						<th>Status</th>
+						<th>Note</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>KHAI TRƯƠNG</td>
+						<td>Triển khai tổng lực bài PR, KOCs, Seeding</td>
+						<td>30/06/2026</td>
+						<td><span class="tag danger">Ưu tiên</span></td>
+						<td><span class="tag warning">Processing</span></td>
+						<td>Đã Air đủ bài, chờ report</td>
+					</tr>
+					<tr>
+						<td>Report</td>
+						<td>Báo cáo nghiệm thu dự án</td>
+						<td>05/07/2026</td>
+						<td><span class="tag primary">Bình thường</span></td>
+						<td><span class="tag">Not Started</span></td>
+						<td>Chờ số liệu KOCs cuối tháng</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- Khối 3: Account Task -->
+	<div class="section-block">
+		<h2>📋 Account Task (Chi tiết công việc)</h2>
+		<div class="table-responsive">
+			<table class="modern-table">
+				<thead>
+					<tr>
+						<th>Hạng mục công việc</th>
+						<th>Tiến độ</th>
+						<th>DL Internal</th>
+						<th>DL EXT/Air</th>
+						<th>Status</th>
+						<th>Đính kèm / Note</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Photo Album Khai trương</td>
+						<td>
+							<div style="display: flex; align-items: center; gap: 12px;">
+								<span style="font-size: 0.8rem; width: 35px;">100%</span>
+								<div class="progress-container" style="width: 100px;">
+									<div class="progress-bar" style="width: 100%"></div>
+								</div>
+							</div>
+						</td>
+						<td>20/06</td>
+						<td>25/06</td>
+						<td><span class="tag success">Done</span></td>
+						<td><a href="#" style="color: var(--accent-primary)">Folder Design</a></td>
+					</tr>
+					<tr>
+						<td>Booking KOC Tiktok</td>
+						<td>
+							<div style="display: flex; align-items: center; gap: 12px;">
+								<span style="font-size: 0.8rem; width: 35px;">50%</span>
+								<div class="progress-container" style="width: 100px;">
+									<div class="progress-bar" style="width: 50%"></div>
+								</div>
+							</div>
+						</td>
+						<td>22/06</td>
+						<td>28/06</td>
+						<td><span class="tag warning">In Progress</span></td>
+						<td>Đang duyệt kịch bản</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- Khối 4: Update Link Air & KPI -->
+	<div class="section-block">
+		<h2>🚀 Cập nhật Link Air & KPI</h2>
+		<div class="grid-cols-4" style="margin-bottom: 24px;">
+			<div class="glass" style="padding: 16px;">
+				<div style="font-size: 0.85rem; color: var(--text-muted)">Tổng Bài (KPI)</div>
+				<div style="font-size: 1.5rem; font-weight: 700;">12</div>
+			</div>
+			<div class="glass" style="padding: 16px;">
+				<div style="font-size: 0.85rem; color: var(--text-muted)">Đã Lên Bài (Post)</div>
+				<div style="font-size: 1.5rem; font-weight: 700; color: var(--success)">8</div>
+			</div>
+			<div class="glass" style="padding: 16px;">
+				<div style="font-size: 0.85rem; color: var(--text-muted)">Đã Seeding</div>
+				<div style="font-size: 1.5rem; font-weight: 700;">1,200 cmt</div>
+			</div>
+			<div class="glass" style="padding: 16px;">
+				<div style="font-size: 0.85rem; color: var(--text-muted)">Cảnh báo</div>
+				<div style="font-size: 1.5rem; font-weight: 700; color: var(--warning)">Thiếu 150 cmt</div>
+			</div>
+		</div>
+		
+		<div class="table-responsive">
+			<table class="modern-table">
+				<thead>
+					<tr>
+						<th>Kênh</th>
+						<th>Loại bài</th>
+						<th>Tên bài</th>
+						<th>Ngày Đăng</th>
+						<th>Link Air</th>
+						<th>Tương tác/Note</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Fanpage</td>
+						<td>Single-Photo</td>
+						<td>OFFICIAL LAUNCHING</td>
+						<td>25/06</td>
+						<td><a href="#" style="color: var(--accent-primary)">FB Link</a></td>
+						<td>Done</td>
+					</tr>
+					<tr>
+						<td>Tiktok</td>
+						<td>Video</td>
+						<td>Review Khai Trương</td>
+						<td>28/06</td>
+						<td><a href="#" style="color: var(--accent-primary)">Tiktok Link</a></td>
+						<td>Đã seeding</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="grid-cols-2">
+		<!-- Khối 5: Thanh Toán -->
+		<div class="section-block">
+			<h2>💰 Quản lý Thanh toán</h2>
+			<div class="table-responsive">
+				<table class="modern-table">
+					<thead>
+						<tr>
+							<th>Đối tác</th>
+							<th>Loại</th>
+							<th>Hạn TT</th>
+							<th>Số tiền</th>
+							<th>Tình trạng</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>eiv Thuy</td>
+							<td>KOL</td>
+							<td>30/06/2026</td>
+							<td>15,000,000đ</td>
+							<td><span class="tag warning">Tới hạn</span></td>
+						</tr>
+						<tr>
+							<td>1990 Agency</td>
+							<td>Vendor</td>
+							<td>15/06/2026</td>
+							<td>50,000,000đ</td>
+							<td><span class="tag success">Done</span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Khối 6: Hợp Đồng & Link Tổng -->
+		<div>
+			<div class="section-block">
+				<h2>📜 Tình trạng Hợp đồng</h2>
+				<div class="table-responsive">
+					<table class="modern-table">
+						<thead>
+							<tr>
+								<th>Bên ký</th>
+								<th>Hợp đồng/BBNT</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Chị Nhàn Seeding</td>
+								<td><a href="#" style="color: var(--accent-primary)">HĐ Nguyên tắc</a></td>
+								<td><span class="tag success">Done</span></td>
+							</tr>
+							<tr>
+								<td>Tạ Minh Hoàng</td>
+								<td><a href="#" style="color: var(--accent-primary)">BBNT KOC</a></td>
+								<td><span class="tag warning">Processing</span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			
+			<div class="section-block">
+				<h2>📁 Thư mục Link Tổng</h2>
+				<div class="glass" style="padding: 16px;">
+					<div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--glass-border);">
+						<span>📄 Proposal Khai trương</span>
+						<a href="#" style="color: var(--accent-primary)">Mở link</a>
+					</div>
+					<div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--glass-border);">
+						<span>📂 Folder Media (Hình ảnh)</span>
+						<a href="#" style="color: var(--accent-primary)">Mở link</a>
+					</div>
+					<div style="display: flex; justify-content: space-between; padding: 12px 0;">
+						<span>📊 Template Báo cáo tháng</span>
+						<a href="#" style="color: var(--accent-primary)">Mở link</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </Layout>
 
 <style>
