@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Lessons Learned">
+	<div class="dashboard-header">
+		<div>
+			<h1>💡 Lessons Learned</h1>
+			<p>Ghi chú lại các bài học kinh nghiệm sau mỗi dự án.</p>
+		</div>
+	</div>
+
+	<div style="padding: 32px; text-align: center; color: var(--text-muted);" class="glass">
+		<p>Chưa có bài học nào được ghi lại.</p>
+		<a href={`${import.meta.env.BASE_URL}/admin`} style="color: var(--accent-primary); text-decoration: none; font-weight: 500;">+ Thêm bài học mới trên CMS</a>
+	</div>
+</Layout>
