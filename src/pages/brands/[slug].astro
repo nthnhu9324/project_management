@@ -1,0 +1,157 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const brands = await getCollection('brands');
+  return brands.map((brand) => ({
+    params: { slug: brand.slug },
+    props: { brand },
+  }));
+}
+
+const { brand } = Astro.props;
+const { title, leader, core_service, overall_progress } = brand.data;
+
+const allTasks = await getCollection('tasks');
+const brandTasks = allTasks.filter((t) => t.data.brand === title);
+
+const initials = title.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
+
+function statusClass(status: string): string {
+  const map: Record<string, string> = {
+    'Completed': 'success',
+    'In Progress': 'warning',
+    'Pending': 'primary',
+    'Canceled': 'danger',
+    'Not Started': '',
+  };
+  return map[status] ?? '';
+}
+
+function formatDate(d?: Date): string {
+  if (!d) return '—';
+  return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+---
+
+<Layout title={title}>
+  <!-- Brand Header -->
+  <div class="brand-header glass">
+    <div class="brand-title">
+      <div class="logo-placeholder">{initials}</div>
+      <div>
+        <h1>{title}</h1>
+        <p>
+          {leader && <span>Leader: {leader}</span>}
+          {core_service && <span> • {core_service}</span>}
+        </p>
+      </div>
+    </div>
+    <div class="brand-progress-header">
+      <span>Overall Progress: {overall_progress}%</span>
+      <div class="progress-container" style="width: 200px; margin-top: 8px;">
+        <div class="progress-bar" style={`width: ${overall_progress}%`}></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Management -->
+  <div class="section-block" style="margin-top: 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h2>Task Management</h2>
+      <a
+        href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`}
+        style="color: var(--accent-primary); text-decoration: none; font-size: 0.9rem;"
+      >
+        + Thêm task mới
+      </a>
+    </div>
+
+    {brandTasks.length === 0 ? (
+      <div class="glass" style="padding: 40px; text-align: center; color: var(--text-muted);">
+        <p>Chưa có task nào cho {title}.</p>
+        <a
+          href={`${import.meta.env.BASE_URL}/admin/#/collections/tasks/new`}
+          style="color: var(--accent-primary); text-decoration: none; font-weight: 500; display: block; margin-top: 12px;"
+        >
+          + Thêm task đầu tiên trên CMS
+        </a>
+      </div>
+    ) : (
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Hạng mục</th>
+              <th>Tiến độ</th>
+              <th>DL Internal</th>
+              <th>DL EXT/Air</th>
+              <th>Status</th>
+              <th>Link / Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            {brandTasks.map((task) => (
+              <tr>
+                <td>{task.data.title}</td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.8rem; min-width: 36px;">{task.data.progress}%</span>
+                    <div class="progress-container" style="width: 100px;">
+                      <div class="progress-bar" style={`width: ${task.data.progress}%`}></div>
+                    </div>
+                  </div>
+                </td>
+                <td>{formatDate(task.data.deadline_internal)}</td>
+                <td>{formatDate(task.data.deadline_ext)}</td>
+                <td>
+                  <span class={`tag ${statusClass(task.data.status)}`}>
+                    {task.data.status}
+                  </span>
+                </td>
+                <td>
+                  {task.data.attachment_link
+                    ? <a href={task.data.attachment_link} target="_blank" style="color: var(--accent-primary);">Link</a>
+                    : '—'
+                  }
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .brand-header {
+    padding: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand-title {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .logo-placeholder {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .brand-progress-header {
+    text-align: right;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+</style>

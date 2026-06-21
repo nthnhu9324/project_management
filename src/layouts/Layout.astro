@@ -1,65 +1,111 @@
 ---
 import '../styles/global.css';
+import { getCollection } from 'astro:content';
 
 export interface Props {
-	title: string;
+  title: string;
 }
 
 const { title } = Astro.props;
+const brands = await getCollection('brands');
+const currentPath = Astro.url.pathname;
 ---
 
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>{title} | Dashboard</title>
-	</head>
-	<body>
-		<div class="app-container">
-			<aside class="sidebar glass-panel">
-				<div class="logo">
-					<h2>Workspace</h2>
-				</div>
-				<nav class="menu">
-					<a href={`${import.meta.env.BASE_URL}/`} class="menu-item">Overview</a>
-					<a href={`${import.meta.env.BASE_URL}/brands/fujimart`} class="menu-item">Fujimart</a>
-					<a href={`${import.meta.env.BASE_URL}/brands/dominos`} class="menu-item">Dominos Pizza</a>
-					<a href={`${import.meta.env.BASE_URL}/resources`} class="menu-item">Resources & Links</a>
-					<a href={`${import.meta.env.BASE_URL}/lessons`} class="menu-item">Lessons Learned</a>
-				</nav>
-				<div class="spacer" style="flex: 1;"></div>
-				<a href={`${import.meta.env.BASE_URL}/admin`} class="menu-item admin-link">CMS Admin</a>
-			</aside>
-			<main class="main-content">
-				<slot />
-			</main>
-		</div>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | Dashboard</title>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar glass-panel">
+        <div class="logo">
+          <h2>Workspace</h2>
+        </div>
+        <nav class="menu">
+          <a
+            href={`${import.meta.env.BASE_URL}/`}
+            class={`menu-item ${currentPath === import.meta.env.BASE_URL + '/' ? 'active' : ''}`}
+          >
+            Overview
+          </a>
 
-		<style>
-			.menu {
-				display: flex;
-				flex-direction: column;
-				gap: 12px;
-			}
-			.menu-item {
-				text-decoration: none;
-				color: var(--text-muted);
-				padding: 12px 16px;
-				border-radius: 12px;
-				transition: all 0.2s;
-				font-weight: 500;
-			}
-			.menu-item:hover, .menu-item.active {
-				background: rgba(255, 255, 255, 0.05);
-				color: var(--text-main);
-			}
-			.admin-link {
-				background: rgba(59, 130, 246, 0.1);
-				color: var(--accent-primary);
-				border: 1px solid rgba(59, 130, 246, 0.2);
-			}
-		</style>
-	</body>
+          {brands.length > 0 && (
+            <div class="menu-section-label">Brands</div>
+          )}
+
+          {brands.map((brand) => (
+            <a
+              href={`${import.meta.env.BASE_URL}/brands/${brand.slug}`}
+              class={`menu-item ${currentPath.includes(brand.slug) ? 'active' : ''}`}
+            >
+              {brand.data.title}
+            </a>
+          ))}
+
+          <div class="menu-section-label">Workspace</div>
+          <a
+            href={`${import.meta.env.BASE_URL}/resources`}
+            class={`menu-item ${currentPath.includes('/resources') ? 'active' : ''}`}
+          >
+            Resources & Links
+          </a>
+          <a
+            href={`${import.meta.env.BASE_URL}/lessons`}
+            class={`menu-item ${currentPath.includes('/lessons') ? 'active' : ''}`}
+          >
+            Lessons Learned
+          </a>
+        </nav>
+
+        <div class="spacer" style="flex: 1;"></div>
+        <a href={`${import.meta.env.BASE_URL}/admin`} class="menu-item admin-link">
+          CMS Admin
+        </a>
+      </aside>
+      <main class="main-content">
+        <slot />
+      </main>
+    </div>
+
+    <style>
+      .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .menu-section-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        padding: 16px 16px 4px;
+        opacity: 0.6;
+      }
+      .menu-item {
+        text-decoration: none;
+        color: var(--text-muted);
+        padding: 10px 16px;
+        border-radius: 10px;
+        transition: all 0.2s;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+      .menu-item:hover,
+      .menu-item.active {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--text-main);
+      }
+      .admin-link {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent-primary);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        margin-bottom: 8px;
+      }
+    </style>
+  </body>
 </html>
